@@ -13,7 +13,15 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 
 io.on("connection", function (socket) {
-    console.log("connected");
+    // accept the emit from script.js
+    socket.on("send-location", function (data) {
+        //after accepting now return the response
+        io.emit("receive-location", { id: socket.id, ...data });
+    });
+    //handling the disconnection from the script.js.
+    socket.on("disconnect", function () {
+        io.emit("user-disconnected", socket.id);
+    });
 }); // handling the connection request com ingfrom script.js io().
 
 app.get("/", function (req, res) {
